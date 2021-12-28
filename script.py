@@ -25,7 +25,7 @@ class WavToRgb(object):
         self.p.terminate()
     
     def convert(self, file_name):
-        rgbs = []
+        rgbs = set()
         wf = wave.open(file_name, 'rb')
         SAMPLE_WIDTH = wf.getsampwidth()
         RATE = wf.getframerate()
@@ -69,7 +69,7 @@ class WavToRgb(object):
                 print("Your nm total: " + str(nm))
                 rgb = wavelen2rgb(nm, MaxIntensity=255)
                 print("The colors for this nm are: " + str(rgb))
-                rgbs.append(rgb)
+                rgbs.add((rgb[0], rgb[1], rgb[2]))
             
             # read some more data
             data = wf.readframes(self.chunk)
@@ -192,8 +192,10 @@ def main():
             time.sleep(1)
             recfile2.stop_recording()
 
-        # Returns an array of RGBs
+        # Returns a set of RGBs
         rgbs = wav_to_rgb.convert(TEMP_FILE_NAME)
+
+        print("Updating lights!")
 
         for rgb in rgbs:
             red = rgb[0]
@@ -216,31 +218,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-# 
-
-# devices = api.get_device_details()
-
-# def change_light(device, color):
-#     device.set_color(color)
-#     device.set_brightness(random.randrange(1, 100))
-#     #device.set_color_temperature(10)
-
-# while (True):
-#     time.sleep(10)
-#     red = random.randrange(1, 255)
-#     green = random.randrange(1, 255)
-#     blue = random.randrange(1, 255)
-#     color = [red, green, blue]
-#     threads = []
-#     for device in devices:
-#         threads.append(Thread(target=change_light, args=(device, color, )))
-    
-#     for thread in threads:
-#         thread.start()
-    
-#     for thread in threads:
-#         thread.join()
-    
-
