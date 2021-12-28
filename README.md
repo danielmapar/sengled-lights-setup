@@ -5,6 +5,7 @@
 ## Setup
 
 * Run: `pip3 install -r requirements.txt`
+* Run: `brew install portaudio --HEAD`
 * Create a `.env` file inside this project with the following format:
     * ```
         SENGLED_USERNAME=xyz@youremail.com
