@@ -196,6 +196,7 @@ def main():
         rgbs = wav_to_rgb.convert(TEMP_FILE_NAME)
 
         print("Updating lights!")
+        print(rgbs)
 
         for rgb in rgbs:
             red = rgb[0]
