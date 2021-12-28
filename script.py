@@ -25,6 +25,7 @@ class WavToRgb(object):
         self.p.terminate()
     
     def convert(self, file_name):
+        rgbs = []
         wf = wave.open(file_name, 'rb')
         SAMPLE_WIDTH = wf.getsampwidth()
         RATE = wf.getframerate()
@@ -68,6 +69,7 @@ class WavToRgb(object):
                 print("Your nm total: " + str(nm))
                 rgb = wavelen2rgb(nm, MaxIntensity=255)
                 print("The colors for this nm are: " + str(rgb))
+                rgbs.append(rgb)
             
             # read some more data
             data = wf.readframes(self.chunk)
@@ -75,6 +77,7 @@ class WavToRgb(object):
                 stream.write(data)
         stream.close()
         wf.close()
+        return rgbs
 
 class Recorder(object):
     '''A recorder class for recording audio to a WAV file.
@@ -188,22 +191,28 @@ def main():
             recfile2.start_recording()
             time.sleep(1)
             recfile2.stop_recording()
+
+        # Returns an array of RGBs
+        rgbs = wav_to_rgb.convert(TEMP_FILE_NAME)
+
+        for rgb in rgbs:
+            red = rgb[0]
+            green = rgb[1]
+            blue = rgb[2]
+            #red = random.randrange(1, 255)
+            #green = random.randrange(1, 255)
+            #blue = random.randrange(1, 255)
+            color = [red, green, blue]
+            threads = []
+            brightness = random.randrange(1, 100)
+            for device in devices:
+                threads.append(Thread(target=change_light, args=(device, color, brightness, )))
         
-        wav_to_rgb.convert(TEMP_FILE_NAME)
-        red = random.randrange(1, 255)
-        green = random.randrange(1, 255)
-        blue = random.randrange(1, 255)
-        color = [red, green, blue]
-        threads = []
-        brightness = random.randrange(1, 100)
-        for device in devices:
-            threads.append(Thread(target=change_light, args=(device, color, brightness, )))
-    
-        for thread in threads:
-            thread.start()
-    
-        for thread in threads:
-            thread.join()
+            for thread in threads:
+                thread.start()
+        
+            for thread in threads:
+                thread.join()
 
 if __name__ == '__main__':
     main()
